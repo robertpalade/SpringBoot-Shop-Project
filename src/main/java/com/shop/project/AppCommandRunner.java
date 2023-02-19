@@ -23,6 +23,7 @@ public class AppCommandRunner implements CommandLineRunner {
         log.info("Application started");
         customerRepo.findAll()
                 .forEach(c -> {
+                            customerService.changeStatus(c);
                             log.info(c.toString());
                         }
                 );

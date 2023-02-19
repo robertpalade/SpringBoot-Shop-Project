@@ -35,5 +35,33 @@ public class CustomerService {
         return  customer.get();
     }
 
+    public void changeStatus(Customer customer) {
+
+        double totalOrderAmount = getTotalOrderAmount(customer);
+//        log.info(String.valueOf(totalOrderAmount));
+
+        customer.setStatus(Status.setPlafon(totalOrderAmount));
+//                    customer.setTier(Status.setPlafon(totalOrderAmount));
+        customerRepo.save(customer);
+//                    double totalSpentAmount = 0;
+//                    List<Order> orderList = orderRepos.findByCustomer(customer);
+//                    for(Order order:orderList){
+//                        Set<Product> productList = order.getProducts();
+//                        double orderTotal = 0;
+//                        for(Product product:productList){
+//                            orderTotal += product.getPrice();
+//                        }
+//                        totalSpentAmount += orderTotal;
+//                    }
+    }
+
+    private double getTotalOrderAmount(Customer customer) {
+        return orderRepo.findByCustomer(customer).stream()
+                .flatMapToDouble(order ->
+                        order.getProducts().stream()
+                                .mapToDouble(Product::getPrice))
+                .sum();
+    }
+
 
 }
