@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/products")
@@ -24,6 +26,31 @@ public class ProductController {
     @GetMapping("/getProductById/{id}")
     public Product getProductById(@PathVariable Long id){
         return productService.getProductById(id);
+    }
+
+    @GetMapping("/getProductsByCategory/{category}")
+    public List<Product> getProductsByCategory(@PathVariable String category){
+        return productService.getProductsByCategory(category);
+    }
+
+    @GetMapping("/getToys")
+    public List<Product> getToys(){
+        return productService.getToys();
+    }
+
+    @GetMapping("/getCheapestBook")
+    public Optional<Product> getCheapestBook(){
+        return productService.getCheapestBook();
+    }
+
+    @GetMapping("/getProductByCategory")
+    public Map<String, List<String>> getProductByCategory(){
+        return productService.getProductByCategory();
+    }
+
+    @GetMapping("/getMostExpensiveProductByCategory")
+    public Map<String, Optional<Product>> getMostExpensiveProductByCategory(){
+        return productService.getMostExpensiveProductByCategory();
     }
 
 }
