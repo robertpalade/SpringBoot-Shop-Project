@@ -1,8 +1,6 @@
 package com.shop.project.services;
 
-import com.shop.project.models.Customer;
-import com.shop.project.models.Order;
-import com.shop.project.models.Product;
+import com.shop.project.models.*;
 import com.shop.project.repos.OrderRepo;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +12,15 @@ import java.util.stream.Collectors;
 public class OrderService {
     final OrderRepo orderRepo;
 
-    public OrderService(OrderRepo orderRepo) {
+    final CustomerService customerService;
+
+    final ProductService productService;
+
+
+    public OrderService(OrderRepo orderRepo, CustomerService customerService, ProductService productService) {
         this.orderRepo = orderRepo;
+        this.customerService = customerService;
+        this.productService = productService;
     }
 
     public List<Order> getOrders() {
@@ -86,6 +91,48 @@ public class OrderService {
         return orderRepo.findAll()
                 .stream()
                 .collect(Collectors.groupingBy(Order::getCustomer));
+    }
+
+    public Order makeOrder(OrderDTO orderDTO) {
+        // orderDTO.getCustomerId->customer
+
+        Customer customer = customerService.getCustomerById(orderDTO.getCustomerId());
+        // similar Set<Product>
+        Set<Product> productList = orderDTO.getProductId().stream()
+                .map(productService::getProductById)
+                .collect(Collectors.toSet());
+
+
+        Order order = new Order();
+        order.setCustomer(customer);
+        order.setProducts(productList);
+
+        LocalDate now = LocalDate.now();
+        order.setOrderDate(now);
+
+        order.setDeliveryDate(now.plusDays(2));
+        order.setStatus("NEW");
+
+        orderRepo.save(order);
+        return order;
+    }
+
+    public Set<Product> makeReturn(ReturnDTO returnDTO) {
+        Customer customer = customerService.getCustomerById(returnDTO.getCustomerId());
+
+        Order order = this.getOrderById(returnDTO.getOrderId());
+
+        Set<Product> productListToBeReturned = returnDTO.getProductId().stream()
+                .map(productService::getProductById)
+                .collect(Collectors.toSet());
+        Set<Product> productListFromOrder = this.getProductsByOrderId(returnDTO.getOrderId());
+        productListFromOrder.removeAll(productListToBeReturned);
+
+        order.setProducts(productListFromOrder);
+
+        orderRepo.save(order);
+        return order.getProducts();
+
     }
 
 

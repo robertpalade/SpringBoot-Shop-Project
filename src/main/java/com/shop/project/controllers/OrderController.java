@@ -1,14 +1,9 @@
 package com.shop.project.controllers;
 
-import com.shop.project.models.Customer;
-import com.shop.project.models.Order;
-import com.shop.project.models.Product;
+import com.shop.project.models.*;
 import com.shop.project.services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -64,5 +59,16 @@ public class OrderController {
     public Map<Customer, List<Order>> getOrderByCustomer(){
         return orderService.getOrderByCustomer();
     }
+
+    @PostMapping("/makeOrder")
+    public Order makeOrder(@RequestBody OrderDTO orderDTO){
+        return orderService.makeOrder(orderDTO);
+    }
+
+    @PostMapping("/makeReturn")
+    public Set<Product> makeReturn(@RequestBody ReturnDTO returnDTO){
+        return orderService.makeReturn(returnDTO);
+    }
+
 
 }
